@@ -287,6 +287,14 @@ class XiaomiAirConditioningCompanion(ClimateEntity):
 
             _LOGGER.debug("Response received: %s", result)
 
+            async def async_force_update_later(_):
+                await self.async_update_ha_state(True)
+
+            async_call_later(
+                self.hass,
+                UPDATE_AFTER_ACTION_TIME,
+                async_force_update_later)
+
             return result == SUCCESS
         except DeviceException as exc:
             _LOGGER.error(mask_error, exc)
@@ -504,10 +512,3 @@ class XiaomiAirConditioningCompanion(ClimateEntity):
             parameters
         )
 
-        async def async_force_update_later(_):
-            await self.async_update_ha_state(True)
-
-        async_call_later(
-            self.hass,
-            UPDATE_AFTER_ACTION_TIME,
-            async_force_update_later)
